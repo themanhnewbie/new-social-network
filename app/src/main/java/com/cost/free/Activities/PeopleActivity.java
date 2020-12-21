@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cost.free.Adapter.PostAdapter;
 import com.cost.free.Model.Post;
-import com.cost.free.Model.User;
 import com.cost.free.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;

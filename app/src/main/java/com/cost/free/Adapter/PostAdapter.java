@@ -3,6 +3,9 @@ package com.cost.free.Adapter;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,8 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cost.free.Activities.EditPostActivity;
@@ -40,6 +42,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -196,8 +202,57 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.MyHolder>{
         holder.shareBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) holder.postImage.getDrawable();
+                if (bitmapDrawable == null) {
+                    sharePost(pTitle, pDescr);
+                }
+                else {
+                    Bitmap bitmap = bitmapDrawable.getBitmap();
+                    sharePost(pTitle, pDescr, bitmap);
+
+                }
             }
         });
+    }
+    private void sharePost(String pTitle, String pDescr) {
+        String shareContent = pTitle + "\n" + pDescr;
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        //in case share via an email app
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Type here");
+        intent.putExtra(Intent.EXTRA_TEXT, shareContent);
+        context.startActivity(Intent.createChooser(intent, "Share by"));
+    }
+
+    private void sharePost(String pTitle, String pDescr, Bitmap bitmap) {
+        String shareContent = pTitle + "\n" + pDescr;
+        Uri uri = saveSharedImage(bitmap);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("image/png");
+        //in case share via an email app
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Type here");
+        intent.putExtra(Intent.EXTRA_TEXT, shareContent);
+        context.startActivity(Intent.createChooser(intent, "Share by"));
+    }
+
+    private Uri saveSharedImage(Bitmap bitmap) {
+        File imageFolder = new File(context.getCacheDir(), "images");
+        Uri uri = null;
+        try {
+            imageFolder.mkdir();
+            File file = new File(imageFolder, "share_image.png");
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 90, fileOutputStream);
+            fileOutputStream.flush();
+            fileOutputStream.close();
+            uri = FileProvider.getUriForFile(context, "com.cost.free.fileprovider", file);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return uri;
     }
 
     private void setLikeButton(MyHolder holder, String pId) {

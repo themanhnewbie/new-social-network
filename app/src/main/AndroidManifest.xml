@@ -29,6 +29,12 @@
         <activity android:name=".Activities.EditPostActivity" />
         <activity android:name=".Activities.PostActivity"/>
         <activity android:name=".Activities.PeopleActivity"/>
+
+        <provider
+            android:authorities="com.cost.free.fileprovider"
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true" />
     </application>
 
 </manifest>
