@@ -88,7 +88,7 @@
             android:id="@+id/pLike"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1.2k Likes"
+            android:text="0 Likes"
             android:textColor="#0D47A1"/>
 
         <View

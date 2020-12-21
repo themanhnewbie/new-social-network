@@ -8,10 +8,12 @@
 
     <!-- TODO: Update blank fragment layout -->
     <ScrollView
+        android:id="@+id/profile_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <RelativeLayout
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
@@ -88,4 +90,10 @@
         android:layout_margin="10dp"
         android:layout_alignParentRight="true"
         android:src="@drawable/ic_edit"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_below="@+id/profile_info"
+        android:id="@+id/profile_post_rv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </RelativeLayout>

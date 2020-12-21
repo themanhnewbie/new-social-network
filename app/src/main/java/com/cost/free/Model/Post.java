@@ -3,12 +3,14 @@ package com.cost.free.Model;
 import java.util.HashMap;
 
 public class Post {
-    String pId, pTitle, pDescr, pImage, pTime, uid, uEmail, uDp, uName;
+    String pId, pTitle, pDescr, pImage, pTime, uid, uEmail, uDp, uName, pLike;
 
     public Post() {
     }
 
-    public Post(String pId, String pTitle, String pDescr, String pImage, String pTime, String uid, String uEmail, String uDp, String uName) {
+    public Post(String pId, String pTitle, String pDescr,
+                String pImage, String pTime, String uid,
+                String uEmail, String uDp, String uName, String pLike) {
         this.pId = pId;
         this.pTitle = pTitle;
         this.pDescr = pDescr;
@@ -19,6 +21,15 @@ public class Post {
         this.uDp = uDp;
         if (uName.equals("")) this.uName = uEmail;
         else this.uName = uName;
+        this.pLike = pLike;
+    }
+
+    public String getpLike() {
+        return pLike;
+    }
+
+    public void setpLike(String pLike) {
+        this.pLike = pLike;
     }
 
     public String getpId() {
@@ -103,6 +114,7 @@ public class Post {
         map.put("pDescr", this.pDescr);
         map.put("pImage", this.pImage);
         map.put("pTime", this.pTime);
+        map.put("pLike", this.pLike);
         return map;
     }
 }

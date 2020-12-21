@@ -14,13 +14,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -29,8 +29,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cost.free.Activities.MainActivity;
-import com.cost.free.Activities.PostActivity;
+import com.cost.free.Adapter.PostAdapter;
+import com.cost.free.Model.Post;
 import com.cost.free.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -49,7 +49,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -84,6 +86,10 @@ public class ProfileFragment extends Fragment {
     Uri image_uri;
 
     String profileOrCover;
+
+    RecyclerView recyclerView;
+    List<Post> postList;
+    PostAdapter postAdapter;
 
     public ProfileFragment() {
 
@@ -158,7 +164,44 @@ public class ProfileFragment extends Fragment {
                 showEditProfileDialog();
             }
         });
+
+        recyclerView = view.findViewById(R.id.profile_post_rv);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setStackFromEnd(true);
+        layoutManager.setReverseLayout(true);
+
+        recyclerView.setLayoutManager(layoutManager);
+
+        postList = new ArrayList<>();
+
+        loadPost();
+
         return view;
+    }
+
+    private void loadPost() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Posts");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                postList.clear();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Post post = ds.getValue(Post.class);
+                    if (post.getUid().equals(mUser.getUid())) {
+                        postList.add(post);
+                    }
+
+                    postAdapter = new PostAdapter(getActivity(), postList);
+
+                    recyclerView.setAdapter(postAdapter);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private boolean checkStoragePermission() {

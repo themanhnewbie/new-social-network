@@ -64,6 +64,7 @@ public class PostActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
+        actionBar.setDisplayHomeAsUpEnabled(true);
         checkUserStatus();
         initView();
         setActionBarTitleAndSubtitle("Add new Post", email);
@@ -73,7 +74,6 @@ public class PostActivity extends BaseActivity {
         progressDialog = new ProgressDialog(this);
 
         mAuth = FirebaseAuth.getInstance();
-
 
         userRef = FirebaseDatabase.getInstance().getReference("Users").child(currentUser.getUid());
         userRef.addValueEventListener(new ValueEventListener() {
@@ -150,7 +150,7 @@ public class PostActivity extends BaseActivity {
                             String downloadUri = uriTask.getResult().toString();
 
                             if (uriTask.isSuccessful()) {
-                                Post post = new Post(timeStamp, title, description, downloadUri, timeStamp, uid, email, dp, name);
+                                Post post = new Post(timeStamp, title, description, downloadUri, timeStamp, uid, email, dp, name, "0");
                                 HashMap<String, Object> hashMap = post.toMap();
 
                                 FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -183,7 +183,7 @@ public class PostActivity extends BaseActivity {
             });
         }
         else {
-            Post post = new Post(timeStamp, title, description, "noImage", timeStamp, uid, email, dp, name);
+            Post post = new Post(timeStamp, title, description, "noImage", timeStamp, uid, email, dp, name, "0");
             HashMap<String, Object> hashMap = post.toMap();
 
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Posts");

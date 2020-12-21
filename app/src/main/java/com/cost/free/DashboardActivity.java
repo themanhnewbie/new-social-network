@@ -57,7 +57,7 @@ public class DashboardActivity extends BaseActivity {
                 }
             };
 
-    private void loadFragment(Fragment fragment) {
+    public void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, fragment);
         transaction.addToBackStack(null);

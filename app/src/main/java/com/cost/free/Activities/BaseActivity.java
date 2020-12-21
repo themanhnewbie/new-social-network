@@ -1,8 +1,11 @@
 package com.cost.free.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,14 +20,14 @@ import com.google.firebase.auth.FirebaseUser;
 
 
 public abstract class BaseActivity extends AppCompatActivity {
-    FirebaseUser currentUser;
+    public FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     ActionBar actionBar;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        //actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
     }
 
@@ -56,17 +59,30 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_logout) {
-            FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        }
-        if (id == R.id.action_post) {
-            startActivity(new Intent(getApplicationContext(), PostActivity.class));
-            startActivity(new Intent(this, PostActivity.class));
+        switch (id) {
+            case (R.id.action_logout) :
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+                break;
+            case (R.id.action_post) :
+                startActivity(new Intent(this, PostActivity.class));
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
     public abstract void initView();
+    private void hideKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+    @Override
+    public boolean onSupportNavigateUp() {
+        hideKeyboard();
+        return super.onSupportNavigateUp();
+    }
 }

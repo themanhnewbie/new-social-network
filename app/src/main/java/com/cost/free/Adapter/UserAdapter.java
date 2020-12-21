@@ -1,6 +1,7 @@
 package com.cost.free.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cost.free.Activities.PeopleActivity;
 import com.cost.free.Model.User;
 import com.cost.free.R;
 import com.squareup.picasso.Picasso;
@@ -41,6 +43,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.MyHolder>{
         String userImage = userList.get(position).getImage();
         String userName = userList.get(position).getName();
         String userEmail = userList.get(position).getEmail();
+        String userId = userList.get(position).getUid();
 
         holder.uName.setText(userName);
         holder.uEmail.setText(userEmail);
@@ -55,6 +58,16 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.MyHolder>{
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, "" + userEmail, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        holder.uAvt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(context, PeopleActivity.class);
+                intent.putExtra("uid", userId);
+                context.startActivity(intent);
             }
         });
 
