@@ -9,9 +9,15 @@ import android.widget.Button;
 
 import com.cost.free.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     Button login_btn, register_btn;
+
+    @Override
+    protected void onResume() {
+        setupUI(findViewById(R.id.layout_main));
+        super.onResume();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,5 +41,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, RegisterActivity.class));
             }
         });
+    }
+
+    @Override
+    public void initView() {
+
     }
 }

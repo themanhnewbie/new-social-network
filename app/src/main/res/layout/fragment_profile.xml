@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#72A8AA"
+    android:background="@color/white"
     tools:context=".Fragment.ProfileFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -36,10 +36,10 @@
                     android:id="@+id/avatar_prof"
                     android:layout_width="120dp"
                     android:layout_height="120dp"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
                     android:background="@color/white"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_default"/>
+                    android:src="@drawable/ic_default"
+                    android:scaleType="centerCrop"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -52,17 +52,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="5dp"
-                        android:textSize="25dp"/>
+                        android:textSize="25sp"/>
 
                     <TextView
                         android:id="@+id/email_prof"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"/>
 
                     <TextView
@@ -70,7 +68,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
-                        android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"/>
 
                 </LinearLayout>
@@ -88,8 +85,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="10dp"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/ic_edit"/>
+        android:src="@drawable/ic_edit" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_below="@+id/profile_info"

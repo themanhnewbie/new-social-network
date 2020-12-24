@@ -14,27 +14,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Free">
-        <activity android:name=".DashboardActivity" >
+        <activity android:name=".Activities.PostDetailActivity"></activity>
+        <activity android:name=".Activities.CreateGroupActivity" />
+        <activity android:name=".DashboardActivity">
             <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity android:name=".Activities.MainActivity" />
         <activity android:name=".Activities.RegisterActivity" />
-        <activity android:name=".Activities.LoginActivity">
-
-        </activity>
+        <activity android:name=".Activities.LoginActivity" />
         <activity android:name=".Activities.EditPostActivity" />
-        <activity android:name=".Activities.PostActivity"/>
-        <activity android:name=".Activities.PeopleActivity"/>
-
-        <provider
-            android:authorities="com.cost.free.fileprovider"
-            android:name="androidx.core.content.FileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true" />
+        <activity android:name=".Activities.PostActivity" />
+        <activity android:name=".Activities.PeopleActivity" />
+        <activity android:name=".Activities.GroupActivity" />
+        <activity android:name=".Activities.PostToGroupActivity" />
     </application>
 
 </manifest>

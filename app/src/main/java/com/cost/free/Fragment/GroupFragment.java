@@ -1,6 +1,14 @@
 package com.cost.free.Fragment;
 
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,21 +17,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.widget.SearchView;
-
-import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.cost.free.Adapter.UserAdapter;
-import com.cost.free.Model.User;
+import com.cost.free.Adapter.GroupAdapter;
+import com.cost.free.Model.Group;
 import com.cost.free.R;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,18 +29,15 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class FriendFragment extends Fragment {
+public class GroupFragment extends Fragment {
+
 
     RecyclerView recyclerView;
-    UserAdapter userAdapter;
-    List<User> userList;
+    GroupAdapter groupAdapter;
+    List<Group> groupList;
 
-    FirebaseAuth mAuth;
 
-    public FriendFragment() {
+    public GroupFragment() {
         // Required empty public constructor
     }
 
@@ -54,39 +47,32 @@ public class FriendFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_friend, container, false);
 
-
-        mAuth = FirebaseAuth.getInstance();
-
         recyclerView = view.findViewById(R.id.recycle_fri);
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        userList = new ArrayList<>();
-        getAllUsers();
+        groupList = new ArrayList<>();
+        getAllGroups();
 
         return view;
     }
 
-    private void getAllUsers() {
-        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+    private void getAllGroups() {
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Groups");
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                userList.clear();
+                groupList.clear();
                 for (DataSnapshot ds : snapshot.getChildren()) {
-                    User user = ds.getValue(User.class);
+                    Group group = ds.getValue(Group.class);
+                    groupList.add(group);
 
-                    if (!user.getUid().equals(fUser.getUid())) {
-                        userList.add(user);
-                    }
+                    groupAdapter = new GroupAdapter(getActivity(), groupList);
 
-                    userAdapter = new UserAdapter(getActivity(), userList);
-
-                    recyclerView.setAdapter(userAdapter);
+                    recyclerView.setAdapter(groupAdapter);
                 }
             }
 
@@ -97,32 +83,25 @@ public class FriendFragment extends Fragment {
         });
     }
 
-    protected void searchUser(String s) {
-        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+    protected void searchGroup(String s) {
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        DatabaseReference groupRef = FirebaseDatabase.getInstance().getReference("Groups");
 
-        reference.addValueEventListener(new ValueEventListener() {
+        groupRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                userList.clear();
+                groupList.clear();
                 for (DataSnapshot ds : snapshot.getChildren()) {
-                    User user = ds.getValue(User.class);
+                    Group group = ds.getValue(Group.class);
 
-                    if (!user.getUid().equals(fUser.getUid())) {
-
-                        if (user.getName().toLowerCase().contains(s.toLowerCase())
-                                || user.getEmail().toLowerCase().contains(s.toLowerCase())) {
-
-                            userList.add(user);
-                        }
-
+                    if (group.getName().toLowerCase().contains(s.toLowerCase())) {
+                        groupList.add(group);
                     }
 
-                    userAdapter = new UserAdapter(getActivity(), userList);
-                    userAdapter.notifyDataSetChanged();
+                    groupAdapter = new GroupAdapter(getActivity(), groupList);
+                    groupAdapter.notifyDataSetChanged();
 
-                    recyclerView.setAdapter(userAdapter);
+                    recyclerView.setAdapter(groupAdapter);
                 }
             }
 
@@ -153,10 +132,10 @@ public class FriendFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (!TextUtils.isEmpty(query.trim())) {
-                    searchUser(query);
+                    searchGroup(query);
                 }
                 else {
-                    getAllUsers();
+                    getAllGroups();
                 }
 
                 return false;
@@ -165,10 +144,10 @@ public class FriendFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String query) {
                 if (!TextUtils.isEmpty(query.trim())) {
-                    searchUser(query);
+                    searchGroup(query);
                 }
                 else {
-                    getAllUsers();
+                    getAllGroups();
                 }
                 return false;
             }
@@ -176,5 +155,4 @@ public class FriendFragment extends Fragment {
 
         super.onCreateOptionsMenu(menu, inflater);
     }
-
 }

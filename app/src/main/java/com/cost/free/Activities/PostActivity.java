@@ -42,7 +42,6 @@ import java.util.HashMap;
 public class PostActivity extends BaseActivity {
 
     FirebaseAuth mAuth;
-    DatabaseReference userRef;
 
     EditText titlePost, desPost;
     ImageView imagePost;
@@ -61,33 +60,24 @@ public class PostActivity extends BaseActivity {
     String name, email, uid, dp;
 
     @Override
+    protected void onResume() {
+        setupUI(findViewById(R.id.layout_post));
+        super.onResume();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        checkUserStatus();
         initView();
-        setActionBarTitleAndSubtitle("Add new Post", email);
+        setActionBarTitle("Add new Post", email);
         cameraPermissions = new String[] {android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storagePermissions = new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
         progressDialog = new ProgressDialog(this);
 
         mAuth = FirebaseAuth.getInstance();
-
-        userRef = FirebaseDatabase.getInstance().getReference("Users").child(currentUser.getUid());
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                name = (String) snapshot.child("name").getValue();
-                dp = (String) snapshot.child("image").getValue();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
 
 
         imagePost.setOnClickListener(new View.OnClickListener() {
@@ -130,10 +120,9 @@ public class PostActivity extends BaseActivity {
         uploadBtn = findViewById(R.id.upload_btn);
 
         uid = currentUser.getUid();
-        email = currentUser.getEmail();
     }
 
-    private void uploadData(String title, String description, String uri) {
+    protected void uploadData(String title, String description, String uri) {
         progressDialog.setMessage("Post....");
         progressDialog.show();
 
@@ -150,7 +139,7 @@ public class PostActivity extends BaseActivity {
                             String downloadUri = uriTask.getResult().toString();
 
                             if (uriTask.isSuccessful()) {
-                                Post post = new Post(timeStamp, title, description, downloadUri, timeStamp, uid, email, dp, name, "0");
+                                Post post = new Post(timeStamp, title, description, downloadUri, uid, "0", "0");
                                 HashMap<String, Object> hashMap = post.toMap();
 
                                 FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -161,7 +150,7 @@ public class PostActivity extends BaseActivity {
                                             public void onSuccess(Void aVoid) {
                                                 progressDialog.dismiss();
                                                 makeToast("Post successful!");
-                                                startMainActivity();
+                                                onBackPressed();
 
                                             }
                                         }).addOnFailureListener(new OnFailureListener() {
@@ -183,7 +172,7 @@ public class PostActivity extends BaseActivity {
             });
         }
         else {
-            Post post = new Post(timeStamp, title, description, "noImage", timeStamp, uid, email, dp, name, "0");
+            Post post = new Post(timeStamp, title, description, "noImage", uid, "0", "0");
             HashMap<String, Object> hashMap = post.toMap();
 
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Posts");
@@ -206,7 +195,7 @@ public class PostActivity extends BaseActivity {
         }
     }
 
-    private void showImagePickDialog() {
+    protected void showImagePickDialog() {
         String[] options = {"Camera", "Gallery"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -240,7 +229,7 @@ public class PostActivity extends BaseActivity {
 
     }
 
-    private void pickFromCamera() {
+    protected void pickFromCamera() {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "Temp Pick");
         values.put(MediaStore.Images.Media.DESCRIPTION, "Temp Description");
@@ -253,23 +242,23 @@ public class PostActivity extends BaseActivity {
 
     }
 
-    private void pickFromGallery() {
+    protected void pickFromGallery() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK);
         galleryIntent.setType("image/*");
         startActivityForResult(galleryIntent, IMAGE_PICK_GALLERY_CODE);
     }
 
-    private boolean checkStoragePermission() {
+    protected boolean checkStoragePermission() {
         boolean result = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == (PackageManager.PERMISSION_DENIED);
         return result;
     }
 
-    private void requestStoragePermission() {
+    protected void requestStoragePermission() {
         ActivityCompat.requestPermissions(this, storagePermissions, STORAGE_REQUEST_CODE);
     }
 
-    private boolean checkCameraPermission() {
+    protected boolean checkCameraPermission() {
         boolean result = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == (PackageManager.PERMISSION_GRANTED);
 
@@ -278,7 +267,7 @@ public class PostActivity extends BaseActivity {
         return result && result1;
     }
 
-    private void requestCameraPermission() {
+    protected void requestCameraPermission() {
         ActivityCompat.requestPermissions(this, cameraPermissions, CAMERA_REQUEST_CODE);
     }
 

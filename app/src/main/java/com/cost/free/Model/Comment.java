@@ -5,16 +5,20 @@ import java.util.HashMap;
 public class Comment {
     private String commentId;
     private String userId;
-    private String authorId;
     private String description;
     private String time;
+    private String postId;
 
-    public Comment(String commentId, String userId, String authorId, String description, String time) {
+    public Comment(){
+
+    }
+
+    public Comment(String commentId, String userId, String description, String time, String postId) {
         this.commentId = commentId;
         this.userId = userId;
-        this.authorId = authorId;
         this.description = description;
         this.time = time;
+        this.postId = postId;
     }
 
     public String getCommentId() {
@@ -49,21 +53,21 @@ public class Comment {
         this.time = time;
     }
 
-    public String getAuthorId() {
-        return authorId;
+    public String getPostId() {
+        return postId;
     }
 
-    public void setAuthorId(String authorId) {
-        this.authorId = authorId;
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 
     public HashMap<String, Object> toMap() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("commentId", commentId);
         map.put("userId", userId);
-        map.put("authorId", authorId);
         map.put("description", description);
         map.put("time", time);
+        map.put("postId", postId);
         return map;
     }
 

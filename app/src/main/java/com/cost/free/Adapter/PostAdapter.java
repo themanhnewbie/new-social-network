@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cost.free.Activities.EditPostActivity;
 import com.cost.free.Activities.PeopleActivity;
+import com.cost.free.Activities.PostDetailActivity;
 import com.cost.free.Model.Post;
 import com.cost.free.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -60,6 +62,7 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.MyHolder>{
 
     DatabaseReference likeRef;
     DatabaseReference postRef;
+    DatabaseReference userRef;
 
     public PostAdapter(Context context, List<Post> postList) {
         this.context = context;
@@ -67,6 +70,7 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.MyHolder>{
         mUid = FirebaseAuth.getInstance().getUid();
         likeRef = FirebaseDatabase.getInstance().getReference().child("Likes");
         postRef = FirebaseDatabase.getInstance().getReference().child("Posts");
+        userRef = FirebaseDatabase.getInstance().getReference().child("Users");
     }
 
     @NonNull
@@ -81,34 +85,46 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.MyHolder>{
     public void onBindViewHolder(@NonNull MyHolder holder, int position) {
 
         String uid = postList.get(position).getUid();
-        String uEmail = postList.get(position).getuEmail();
-        String uName = postList.get(position).getuName();
-        String uDp = postList.get(position).getuDp();
         String pId = postList.get(position).getpId();
         String pTitle = postList.get(position).getpTitle();
         String pDescr = postList.get(position).getpDescr();
         String pImage = postList.get(position).getpImage();
-        String pTimeStamp = postList.get(position).getpTime();
         String pLike = postList.get(position).getpLike();
+        String pComment = postList.get(position).getCommentCount();
 
         Calendar calendar = Calendar.getInstance(Locale.getDefault());
-        calendar.setTimeInMillis(Long.parseLong(pTimeStamp));
+        calendar.setTimeInMillis(Long.parseLong(pId));
         String postTime = DateFormat.format("dd/MM/yyyy hh:mm aa", calendar).toString();
 
-        holder.usName.setText(uName);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            String name;
+            String avatar;
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                name = (String) snapshot.child(uid).child("name").getValue();
+                if (name.equals("")) name = (String) snapshot.child(uid).child("email").getValue();
+                holder.usName.setText(name);
+                avatar = (String) snapshot.child(uid).child("image").getValue();
+                try {
+                    Picasso.get().load(avatar).placeholder(R.drawable.ic_default_img).into(holder.usPic);
+                }
+                catch (Exception e) {
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         holder.postTime.setText(postTime);
         holder.postTitle.setText(pTitle);
         holder.postDes.setText(pDescr);
         holder.postLike.setText(pLike + " Likes");
+        holder.postComment.setText(pComment + " Comments");
 
         setLikeButton(holder, pId);
-
-        try {
-            Picasso.get().load(uDp).placeholder(R.drawable.ic_default_img).into(holder.usPic);
-        }
-        catch (Exception e) {
-
-        }
 
         if (pImage.equals("noImage")) {
             holder.postImage.setVisibility(View.GONE);
@@ -142,18 +158,22 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.MyHolder>{
         holder.commentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(context, PostDetailActivity.class);
+                intent.putExtra("postId", pId);
+                Log.d("!111111111", pId);
+                context.startActivity(intent);
             }
         });
 
         holder.likeBtn.setOnClickListener(new View.OnClickListener() {
-            long pLike, nLike;
+            long pLike;
             @Override
             public void onClick(View v) {
                 String postId = postList.get(position).getpId();
-                postRef.child(postId).addValueEventListener(new ValueEventListener() {
+                likeRef.child(postId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        pLike = Integer.parseInt("" + snapshot.child("pLike").getValue());
+                        pLike = snapshot.getChildrenCount();
                     }
 
                     @Override
@@ -167,15 +187,18 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.MyHolder>{
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (processLike) {
                             if (snapshot.child(postId).hasChild(mUid)) {
-                                postRef.child(postId).child("pLike").setValue("" + (pLike - 1));
+                                pLike--;
+                                postRef.child(postId).child("pLike").setValue("" + (pLike));
                                 likeRef.child(postId).child(mUid).removeValue();
                             } else {
-                                postRef.child(postId).child("pLike").setValue("" + (pLike + 1));
+                                pLike++;
+                                postRef.child(postId).child("pLike").setValue("" + (pLike));
                                 likeRef.child(postId).child(mUid).setValue("Liked");
 
                             }
                             processLike = false;
 
+                            holder.postLike.setText(pLike + " Likes");
                         }
                     }
 
@@ -184,75 +207,9 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.MyHolder>{
 
                     }
                 });
-                likeRef.child(postId).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        nLike = snapshot.getChildrenCount();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-                holder.postLike.setText(nLike + " Likes");
             }
         });
 
-        holder.shareBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                BitmapDrawable bitmapDrawable = (BitmapDrawable) holder.postImage.getDrawable();
-                if (bitmapDrawable == null) {
-                    sharePost(pTitle, pDescr);
-                }
-                else {
-                    Bitmap bitmap = bitmapDrawable.getBitmap();
-                    sharePost(pTitle, pDescr, bitmap);
-
-                }
-            }
-        });
-    }
-    private void sharePost(String pTitle, String pDescr) {
-        String shareContent = pTitle + "\n" + pDescr;
-
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        //in case share via an email app
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Type here");
-        intent.putExtra(Intent.EXTRA_TEXT, shareContent);
-        context.startActivity(Intent.createChooser(intent, "Share by"));
-    }
-
-    private void sharePost(String pTitle, String pDescr, Bitmap bitmap) {
-        String shareContent = pTitle + "\n" + pDescr;
-        Uri uri = saveSharedImage(bitmap);
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("image/png");
-        //in case share via an email app
-        intent.putExtra(Intent.EXTRA_STREAM, uri);
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Type here");
-        intent.putExtra(Intent.EXTRA_TEXT, shareContent);
-        context.startActivity(Intent.createChooser(intent, "Share by"));
-    }
-
-    private Uri saveSharedImage(Bitmap bitmap) {
-        File imageFolder = new File(context.getCacheDir(), "images");
-        Uri uri = null;
-        try {
-            imageFolder.mkdir();
-            File file = new File(imageFolder, "share_image.png");
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 90, fileOutputStream);
-            fileOutputStream.flush();
-            fileOutputStream.close();
-            uri = FileProvider.getUriForFile(context, "com.cost.free.fileprovider", file);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return uri;
     }
 
     private void setLikeButton(MyHolder holder, String pId) {
@@ -346,9 +303,9 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.MyHolder>{
     class MyHolder extends RecyclerView.ViewHolder{
 
         ImageView usPic, postImage;
-        TextView usName, postTime, postTitle, postDes, postLike;
+        TextView usName, postTime, postTitle, postDes, postLike, postComment;
         ImageButton moreBtn;
-        Button likeBtn, commentBtn, shareBtn;
+        Button likeBtn, commentBtn;
 
         public MyHolder(@NonNull View itemView) {
             super(itemView);
@@ -360,10 +317,10 @@ public class PostAdapter  extends RecyclerView.Adapter<PostAdapter.MyHolder>{
             postTitle = itemView.findViewById(R.id.pTitle);
             postDes = itemView.findViewById(R.id.pDes);
             postLike = itemView.findViewById(R.id.pLike);
+            postComment = itemView.findViewById(R.id.pComment);
             moreBtn = itemView.findViewById(R.id.more_btn);
             likeBtn = itemView.findViewById(R.id.like_btn);
             commentBtn = itemView.findViewById(R.id.comment_btn);
-            shareBtn = itemView.findViewById(R.id.share_btn);
 
         }
     }

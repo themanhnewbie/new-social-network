@@ -3,25 +3,28 @@ package com.cost.free.Model;
 import java.util.HashMap;
 
 public class Post {
-    String pId, pTitle, pDescr, pImage, pTime, uid, uEmail, uDp, uName, pLike;
+    String pId, pTitle, pDescr, pImage, uid, pLike, commentCount;
+
 
     public Post() {
     }
 
     public Post(String pId, String pTitle, String pDescr,
-                String pImage, String pTime, String uid,
-                String uEmail, String uDp, String uName, String pLike) {
+                String pImage, String uid, String pLike, String commentCount) {
         this.pId = pId;
         this.pTitle = pTitle;
         this.pDescr = pDescr;
         this.pImage = pImage;
-        this.pTime = pTime;
         this.uid = uid;
-        this.uEmail = uEmail;
-        this.uDp = uDp;
-        if (uName.equals("")) this.uName = uEmail;
-        else this.uName = uName;
         this.pLike = pLike;
+        this.commentCount = commentCount;
+    }
+    public String getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(String commentCount) {
+        this.commentCount = commentCount;
     }
 
     public String getpLike() {
@@ -64,13 +67,7 @@ public class Post {
         this.pImage = pImage;
     }
 
-    public String getpTime() {
-        return pTime;
-    }
 
-    public void setpTime(String pTime) {
-        this.pTime = pTime;
-    }
 
     public String getUid() {
         return uid;
@@ -80,41 +77,17 @@ public class Post {
         this.uid = uid;
     }
 
-    public String getuEmail() {
-        return uEmail;
-    }
 
-    public void setuEmail(String uEmail) {
-        this.uEmail = uEmail;
-    }
-
-    public String getuDp() {
-        return uDp;
-    }
-
-    public void setuDp(String uDp) {
-        this.uDp = uDp;
-    }
-
-    public String getuName() {
-        return uName;
-    }
-
-    public void setuName(String uName) {
-        this.uName = uName;
-    }
 
     public HashMap<String, Object> toMap() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("uid", this.uid);
-        map.put("uName", this.uName);
-        map.put("uDp", this.uDp);
         map.put("pId", this.pId);
         map.put("pTitle", this.pTitle);
         map.put("pDescr", this.pDescr);
         map.put("pImage", this.pImage);
-        map.put("pTime", this.pTime);
         map.put("pLike", this.pLike);
+        map.put("commentCount", this.commentCount);
         return map;
     }
 }

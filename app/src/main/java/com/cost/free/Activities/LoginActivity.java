@@ -49,6 +49,12 @@ public class LoginActivity extends BaseActivity {
     ProgressDialog progressDialog;
 
     @Override
+    protected void onResume() {
+        setupUI(findViewById(R.id.layout_login));
+        super.onResume();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -194,7 +200,7 @@ public class LoginActivity extends BaseActivity {
                         if (task.isSuccessful()) {
                             progressDialog.dismiss();
                             currentUser = mAuth.getCurrentUser();
-                            makeToast("Logged in...\n" + currentUser.getEmail());
+                            makeToast("Logged in " + currentUser.getEmail());
 
                             startMainActivity();
                             finish();

@@ -83,13 +83,27 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:background="@color/white"/>
-
-        <TextView
-            android:id="@+id/pLike"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="0 Likes"
-            android:textColor="#0D47A1"/>
+            android:orientation="horizontal" >
+            <TextView
+                android:layout_weight="1"
+                android:id="@+id/pLike"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingStart="5dp"
+                android:text="0 Likes"
+                android:textColor="#0D47A1"/>
+            <TextView
+                android:id="@+id/pComment"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 Comments"
+                android:textColor="#0D47A1" />
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
@@ -100,37 +114,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:weightSum="2" >
 
             <Button
                 android:id="@+id/like_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
                 android:layout_weight="1"
-                android:text="LIKE"
+                android:textAllCaps="false"
+                android:text="Like"
                 android:drawablePadding="5dp"
                 android:background="@color/white"
-                android:drawableLeft="@drawable/ic_like"/>
+                android:drawableLeft="@drawable/ic_like" />
 
             <Button
                 android:id="@+id/comment_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
                 android:layout_weight="1"
-                android:text="COMMENT"
+                android:textAllCaps="false"
+                android:text="Comment"
                 android:drawablePadding="5dp"
                 android:drawableLeft="@drawable/ic_comment"
-                android:background="@color/white" />
+                android:background="@color/white"/>
 
-            <Button
-                android:id="@+id/share_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/ic_share"
-                android:text="SHARE"
-                android:drawablePadding="5dp"
-                android:background="@color/white" />
 
         </LinearLayout>
     </LinearLayout>

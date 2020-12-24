@@ -9,6 +9,7 @@ import android.view.MenuItem;
 
 import com.cost.free.Activities.BaseActivity;
 import com.cost.free.Fragment.FriendFragment;
+import com.cost.free.Fragment.GroupFragment;
 import com.cost.free.Fragment.HomeFragment;
 import com.cost.free.Fragment.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -26,36 +27,12 @@ public class DashboardActivity extends BaseActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        //bottom navigation
         navigationView = findViewById(R.id.navigation);
-        navigationView.setOnNavigationItemSelectedListener(selectedListener);
 
         setActionBarTitle("Home");
         loadFragment(new HomeFragment());
+
     }
-
-    private BottomNavigationView.OnNavigationItemSelectedListener selectedListener =
-            new BottomNavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    switch (item.getItemId()) {
-                        case R.id.nav_home:
-                            setActionBarTitle("Home");
-                            loadFragment(new HomeFragment());
-                            return true;
-                        case R.id.nav_profile:
-                            setActionBarTitle("Profile");
-                            loadFragment(new ProfileFragment());
-                            return true;
-                        case R.id.nav_friend:
-                            setActionBarTitle("People");
-                            loadFragment(new FriendFragment());
-                            return true;
-
-                    }
-                    return false;
-                }
-            };
 
     public void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -64,6 +41,42 @@ public class DashboardActivity extends BaseActivity {
         transaction.commit();
     }
 
+    @Override
+    protected void onResume() {
+
+        BottomNavigationView.OnNavigationItemSelectedListener selectedListener =
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    HomeFragment homeFragment = new HomeFragment();
+                    ProfileFragment profileFragment = new ProfileFragment();
+                    FriendFragment friendFragment = new FriendFragment();
+                    GroupFragment groupFragment = new GroupFragment();
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.nav_home:
+                                setActionBarTitle("Home");
+                                loadFragment(homeFragment);
+                                return true;
+                            case R.id.nav_profile:
+                                setActionBarTitle("Profile");
+                                loadFragment(profileFragment);
+                                return true;
+                            case R.id.nav_friend:
+                                setActionBarTitle("People");
+                                loadFragment(friendFragment);
+                                return true;
+                            case R.id.nav_group:
+                                setActionBarTitle("Group");
+                                loadFragment(groupFragment);
+                                return true;
+
+                        }
+                        return false;
+                    }
+                };
+        navigationView.setOnNavigationItemSelectedListener(selectedListener);
+        super.onResume();
+    }
 
     @Override
     public void initView() {

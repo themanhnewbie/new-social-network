@@ -33,6 +33,12 @@ public class RegisterActivity extends BaseActivity {
     ProgressDialog progressDialog;
 
     @Override
+    protected void onResume() {
+        setupUI(findViewById(R.id.layout_register));
+        super.onResume();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);

@@ -26,7 +26,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PeopleActivity extends AppCompatActivity {
+public class PeopleActivity extends BaseActivity {
 
     ImageView avtProf, coverPrf;
     TextView nameProf, emailProf, phonePrf;
@@ -44,6 +44,7 @@ public class PeopleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_profile);
         initView();
+        actionBar.setDisplayHomeAsUpEnabled(true);
         fab.setVisibility(View.GONE);
         Intent intent = getIntent();
         uid = intent.getStringExtra("uid");

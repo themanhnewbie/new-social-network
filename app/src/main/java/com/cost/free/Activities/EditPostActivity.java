@@ -29,7 +29,7 @@ public class EditPostActivity extends PostActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setActionBarTitle("Edit Post");
+        setActionBarTitle("Edit Post", email);
         Intent intent = getIntent();
         String editPostId = intent.getStringExtra("editPostId");
         loadPostData(editPostId);
